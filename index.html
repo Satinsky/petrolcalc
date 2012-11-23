@@ -19,7 +19,7 @@
 		function onDeviceReady() {
 			//window.db = window.openDatabase('PetrolLog', '1.0', 'Petrol Calc', 200000);
 			//window.db.transaction(InitDB, DBError, DBSuccess);
-			alert('CREATE TABLE IF NOT EXISTS ' + table_name + ' (Id unique, Km, Amount, Litres)');
+			navigator.notification.alert('CREATE TABLE IF NOT EXISTS ' + table_name + ' (Id unique, Km, Amount, Litres)');
 		}
 
 		function InitDB() {
@@ -27,11 +27,11 @@
 		}
 
 		function DBError(err) {
-			alert('Error processing SQL: ' + err.code);
+			navigator.notification.alert('Error processing SQL: ' + err.code);
 		}
 
 		function DBSuccess() {
-			alert('Success!');
+			navigator.notification.alert('Success!');
 		}
 
 		function GetLog() {
