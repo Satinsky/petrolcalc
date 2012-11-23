@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html;" charset="utf-8">
+	<meta name="viewport" id="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalabel=no;" />
+	<link type="text/stylesheet" rel="stylesheet" href="css/mobile.min.css" />
+	<link type="text/stylesheet" rel="stylesheet" href="css/stylin.css" />
+	<script type="text/javascript" charset="utf-8" src="js/phonegap.js"></script>
+	<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile.js"></script>
+
+	<script type="text/javascript" charset="utf-8">
+		var table_name = 'PetroLog';
+
+		function onBodyLoad() {
+			document.addEventListener("deviceready", onDeviceReady, false);
+		}
+
+		function onDeviceReady() {
+			window.db = window.openDatabase('PetrolLog', '1.0', 'Petrol Calc', 200000);
+			window.db.transaction(InitDB, DBError, DBSuccess);
+		}
+
+		function InitDB() {
+			tx.executeSql('CREATE TABLE IF NOT EXISTS ' + table_name + ' (Id unique, Km, Amount, Litres)')
+		}
+
+		function DBError(err) {
+			alert('Error processing SQL: ' + err.code);
+		}
+
+		function DBSuccess() {
+			alert('Success!');
+		}
+
+		function GetLog() {
+			window.db.transaction('SELECT Id, Km, Amount, Litres FROM ' + table_name, [], GetLogSucess, DBError);
+		}
+
+		function GetLogSuccess(tx, results) {
+			var len = results.rows.length;
+			console.log(table_name + ' table: ' + len + ' rows found.');
+			for(var i=0; i < len; i++) {
+				$('#petro-log').append('Row = ' + i + ' Id = ' + results.rows.items(i).Id);
+			}
+		}
+
+		function RecordPetro() {
+			window.db.transaction(UpdateDB, DBError, DBSuccess);
+		}
+
+		function UpdateDB(tx) {
+			var km = $('#km').val();
+			var amount = $('#amount').val();
+			var litres = $('#litres').val();
+			tx.executeSql('INSERT INTO ' + table_name + ' (Km, Amount, Litres) VALUES("' + km + '", "' + amount + '", "' + litres '")');
+		}
+	</script>
+	<title>Petro Calc</title>
+</head>
+<body>
+	<div class="container">
+		<h1>Petro Calc</h1>
+		<form onSubmit="RecordPetro()">
+			<label for="Km">Kilometres: </label><input type="text" id="km" name="Km" placeholder="Enter Kilometres..." /><br />
+			<label for="Amount">Amount: </label><input type="text" id="amount" name="Amount" placeholder="Enter Amount..." /><br />
+			<label for="Litres">Litres: </label><input type="text" id="litres" name="Litres" placeholder="Enter Litres..." /><br />
+			<input type="submit" value="Update" />
+		</form>
+		<hr width="70%" />
+		<button type="button" id="get-log" onClick="GetLog()">Get Petro History</button>
+		<table id="petro-log"></table>
+	</div>
+</body>
+</html>
